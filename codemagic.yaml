@@ -1,0 +1,20 @@
+workflows:
+  ios-workflow:
+    name: iOS Build
+    environment:
+      node: latest
+      xcode: latest
+    scripts:
+      - name: Paketleri kur ve iOS projesi oluştur
+        script: |
+          npm install
+          npx cap add ios
+      - name: İmzalanmamış IPA derle
+        script: |
+          cd ios/App
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+          mkdir -p Payload
+          cp -r build/Release-iphoneos/App.app Payload/
+          zip -r ../../FitnessTracker.ipa Payload
+    artifacts:
+      - FitnessTracker.ipa
